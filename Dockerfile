@@ -176,6 +176,7 @@ COPY --chown=$UID:$GID ./package.json /app/package.json
 
 # copy backend files
 COPY --chown=$UID:$GID ./backend .
+RUN ls -la open_webui/static
 
 EXPOSE 7860
 
