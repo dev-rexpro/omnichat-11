@@ -23,8 +23,16 @@ ARG BUILD_HASH=dev-build
 ARG UID=1000
 ARG GID=1000
 
-# Skipping WebUI frontend build stage to avoid memory limit (OOM) on Hugging Face.
-# Pre-built frontend files will be copied directly from the host.
+######## WebUI frontend ########
+FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
+ARG BUILD_HASH
+WORKDIR /app
+RUN apk add --no-cache git
+COPY package.json package-lock.json ./
+RUN npm ci --force
+COPY . .
+ENV APP_BUILD_HASH=${BUILD_HASH}
+RUN npm run build
 
 ######## WebUI backend ########
 FROM python:3.11-slim-bookworm AS base
@@ -161,7 +169,7 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
 # COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
 
 # copy pre-built frontend files and root metadata
-COPY --chown=$UID:$GID ./build /app/build
+COPY --from=build --chown=$UID:$GID /app/build /app/build
 COPY --chown=$UID:$GID ./CHANGELOG.md /app/CHANGELOG.md
 COPY --chown=$UID:$GID ./package.json /app/package.json
 
