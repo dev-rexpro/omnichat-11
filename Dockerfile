@@ -81,6 +81,9 @@ COPY open_webui/ /app/backend/open_webui/
 COPY start.sh /app/backend/start.sh
 RUN chmod +x /app/backend/start.sh
 
+# Create placeholder CHANGELOG.md (required by open_webui/env.py)
+RUN printf '# Changelog\n' > /app/backend/open_webui/CHANGELOG.md
+
 EXPOSE 7860
 
 HEALTHCHECK CMD curl --silent --fail http://localhost:${PORT:-7860}/health | jq -ne 'input.status == true' || exit 1
