@@ -1,0 +1,140 @@
+
+	/*
+	 * Minimal textLayer styles extracted from pdfjs-dist/web/pdf_viewer.css.
+	 * These ensure the invisible text spans are positioned exactly over the
+	 * rendered canvas so that browser-native Ctrl+F search and text selection
+	 * work correctly.
+	 */
+	.textLayer {
+		position: absolute;
+		text-align: initial;
+		inset: 0;
+		overflow: clip;
+		opacity: 1;
+		line-height: 1;
+		-webkit-text-size-adjust: none;
+		-moz-text-size-adjust: none;
+		text-size-adjust: none;
+		forced-color-adjust: none;
+		transform-origin: 0 0;
+		caret-color: CanvasText;
+		z-index: 0;
+	}
+
+	.textLayer :is(span, br) {
+		color: transparent;
+		position: absolute;
+		white-space: pre;
+		cursor: text;
+		transform-origin: 0% 0%;
+	}
+
+	.textLayer {
+		/* --total-scale-factor is derived from --scale-factor (set on the wrapper)
+		   and --user-unit (defaults to 1). This mirrors the official pdf_viewer.css. */
+		--user-unit: 1;
+		--total-scale-factor: calc(var(--scale-factor) * var(--user-unit));
+		--min-font-size: 1;
+		--text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+		--min-font-size-inv: calc(1 / var(--min-font-size));
+	}
+
+	.textLayer > :not(.markedContent),
+	.textLayer .markedContent span:not(.markedContent) {
+		z-index: 1;
+		--font-height: 0;
+		font-size: calc(var(--text-scale-factor) * var(--font-height));
+		--scale-x: 1;
+		--rotate: 0deg;
+		transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+	}
+
+	.textLayer .markedContent {
+		display: contents;
+	}
+
+	.textLayer span[role='img'] {
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		user-select: none;
+		cursor: default;
+	}
+
+	/* Selection highlight color */
+	.textLayer ::-moz-selection {
+		background: rgba(0, 0, 255, 0.25);
+	}
+
+	.textLayer ::selection {
+		background: rgba(0, 0, 255, 0.25);
+	}
+
+	.textLayer br::-moz-selection {
+		background: transparent;
+	}
+
+	.textLayer br::selection {
+		background: transparent;
+	}
+
+	.textLayer .endOfContent {
+		display: block;
+		position: absolute;
+		inset: 100% 0 0;
+		z-index: 0;
+		cursor: default;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		user-select: none;
+	}
+
+	.textLayer.selecting .endOfContent {
+		top: 0;
+	}
+
+	.excel-table-container table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	.excel-table-container table td,
+	.excel-table-container table th {
+		border-width: 1px;
+		border-style: solid;
+		border-color: var(--color-gray-300, #cdcdcd);
+		padding: 0.5rem 0.75rem;
+		text-align: left;
+	}
+
+	.dark .excel-table-container table td,
+	.dark .excel-table-container table th {
+		border-color: var(--color-gray-600, #676767);
+	}
+
+	.excel-table-container table th {
+		background-color: var(--color-gray-100, #ececec);
+		font-weight: 600;
+	}
+
+	.dark .excel-table-container table th {
+		background-color: var(--color-gray-800, #333);
+		color: var(--color-gray-100, #ececec);
+	}
+
+	.excel-table-container table tr:nth-child(even) {
+		background-color: var(--color-gray-50, #f9f9f9);
+	}
+
+	.dark .excel-table-container table tr:nth-child(even) {
+		background-color: rgba(38, 38, 38, 0.5);
+	}
+
+	.excel-table-container table tr:hover {
+		background-color: var(--color-gray-100, #ececec);
+	}
+
+	.dark .excel-table-container table tr:hover {
+		background-color: rgba(51, 51, 51, 0.5);
+	}

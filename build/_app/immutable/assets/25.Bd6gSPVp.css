@@ -1,0 +1,59 @@
+
+	.highlight.svelte-s6wdik {
+		animation: svelte-s6wdik-highlightAnimation 2s ease-in-out;
+	}
+
+	@keyframes svelte-s6wdik-highlightAnimation {
+		0% {
+			background-color: rgba(0, 60, 255, 0.1);
+		}
+		100% {
+			background-color: transparent;
+		}
+	}
+
+	/* Swipe-to-reply styles */
+	.swipe-reply-wrapper.svelte-s6wdik {
+		touch-action: pan-y;
+	}
+
+	.swipe-reply-indicator.svelte-s6wdik {
+		position: absolute;
+		left: 8px;
+		top: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 5;
+		pointer-events: none;
+	}
+
+	.swipe-reply-icon.svelte-s6wdik {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-color: rgba(128, 128, 128, 0.15);
+		color: rgba(128, 128, 128, 0.8);
+		transition:
+			background-color 0.15s,
+			color 0.15s;
+	}
+
+	.swipe-reply-icon--active.svelte-s6wdik {
+		background-color: rgba(59, 130, 246, 0.2);
+		color: rgb(59, 130, 246);
+	}
+
+	.dark .swipe-reply-icon.svelte-s6wdik {
+		background-color: rgba(200, 200, 200, 0.1);
+		color: rgba(200, 200, 200, 0.6);
+	}
+
+	.dark .swipe-reply-icon--active.svelte-s6wdik {
+		background-color: rgba(96, 165, 250, 0.2);
+		color: rgb(96, 165, 250);
+	}
