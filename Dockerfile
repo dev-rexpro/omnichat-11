@@ -1,10 +1,8 @@
 # syntax=docker/dockerfile:1
 # Standalone FastAPI backend Dockerfile
-# Usage: docker build -t omnichat-backend -f backend/Dockerfile.backend .
-# The pre-built frontend ./build folder (from local `npm run build`) must be copied
-# into /app/build inside the container before starting the server.
+# Build context: backend/ folder
 
-FROM --platform=$BUILDPLATFORM python:3.11-slim-bookworm AS base
+FROM python:3.11-slim-bookworm
 
 ARG USE_CUDA=false
 ARG USE_OLLAMA=false
@@ -30,9 +28,9 @@ RUN if [ $UID -ne 0 ]; then \
     adduser --uid $UID --gid $GID --home $HOME --disabled-password --no-create-home app; \
     fi
 
-RUN mkdir -p /app $HOME/.cache/chroma
+RUN mkdir -p /app/backend /app/build $HOME/.cache/chroma
 RUN echo -n 00000000-0000-0000-0000-000000000000 > $HOME/.cache/chroma/telemetry_user_id
-RUN chown -R $UID:$GID /app $HOME
+RUN chown -R $UID:$GID /app/backend /app/build $HOME
 
 # System dependencies
 RUN apt-get update && \
@@ -43,7 +41,7 @@ RUN apt-get update && \
     ffmpeg libsm6 libxext6 zstd \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /app/backend
 
 # Install Python dependencies
 COPY requirements.txt ./requirements.txt
@@ -78,19 +76,10 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     rm -rf /var/lib/apt/lists/*; \
     fi
 
-# Copy backend source code
-COPY --chown=$UID:$GID ./open_webui /app/open_webui
-COPY --chown=$UID:$GID ./migrations /app/migrations
-COPY --chown=$UID:$GID ./alembic.ini /app/alembic.ini
-COPY --chown=$UID:$GID ./hatch_build.py /app/hatch_build.py
-COPY --chown=$UID:$GID ./start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
-# Copy pre-built frontend (expected at ./build relative to backend folder)
-# If using docker build from repo root with this Dockerfile:
-#   COPY --from=local-build-stage /path/to/build /app/build
-# If deploying backend separately, mount or COPY the frontend build into /app/build
-COPY --chown=$UID:$GID ../build /app/build
+# Copy backend source
+COPY open_webui/ /app/backend/open_webui/
+COPY start.sh /app/backend/start.sh
+RUN chmod +x /app/backend/start.sh
 
 EXPOSE 7860
 
@@ -135,4 +124,4 @@ ENV ENV=prod \
     WEBUI_BUILD_VERSION=${BUILD_HASH} \
     DOCKER=true
 
-CMD ["bash", "start.sh"]
+CMD ["bash", "/app/backend/start.sh"]
